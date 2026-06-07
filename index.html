@@ -711,6 +711,8 @@
 
     async function logout() {
       await signOut(auth);
+      loginBtn.classList.remove("hidden");
+      logoutBtn.classList.add("hidden");
     }
 
     async function loadUserRecord(user) {
