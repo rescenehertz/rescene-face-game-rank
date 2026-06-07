@@ -376,6 +376,18 @@
   color: #111;
 }
 
+    .rankingTabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.rankingTabs button {
+  padding: 12px 6px;
+  font-size: 13px;
+}
+
     @media (min-width: 768px) {
       .app {
         max-width: 520px;
@@ -491,6 +503,11 @@
         <button onclick="saveNickname()">저장</button>
       </div>
 
+      <div class="rankingTabs">
+  <button onclick="loadRankings('today15')">오늘 TOP 15</button>
+  <button onclick="loadRankings('all100')">전체 TOP 100</button>
+</div>
+      
       <ol id="rankingList" class="rankList">
         <li>랭킹을 불러오는 중...</li>
       </ol>
@@ -549,6 +566,7 @@
       collection,
       query,
       orderBy,
+      where,
       limit,
       getDocs,
       serverTimestamp
@@ -808,46 +826,83 @@
       await loadRankings();
     }
 
-    async function loadRankings() {
-      rankingListEl.innerHTML = "<li>랭킹을 불러오는 중...</li>";
+    async function loadRankings(type = "all15") {
+  rankingListEl.innerHTML = "<li>랭킹을 불러오는 중...</li>";
 
-      try {
-        const q = query(
-          collection(db, "rankings"),
-          orderBy("score", "desc"),
-          limit(15)
-        );
+  try {
+    let q;
+    let maxCount;
 
-        const snap = await getDocs(q);
+    if (type === "today15") {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-        if (snap.empty) {
-          rankingListEl.innerHTML = "<li>아직 등록된 기록이 없습니다.</li>";
-          return;
-        }
+      q = query(
+        collection(db, "rankings"),
+        where("updatedAt", ">=", today),
+        orderBy("updatedAt", "desc"),
+        limit(100)
+      );
 
-        rankingListEl.innerHTML = "";
+      maxCount = 15;
+    } else if (type === "all100") {
+      q = query(
+        collection(db, "rankings"),
+        orderBy("score", "desc"),
+        limit(100)
+      );
 
-        let rank = 1;
+      maxCount = 100;
+    } else {
+      q = query(
+        collection(db, "rankings"),
+        orderBy("score", "desc"),
+        limit(15)
+      );
 
-        snap.forEach(docSnap => {
-          const data = docSnap.data();
-
-          if (!data.nickname) return;
-
-          const li = document.createElement("li");
-          li.innerHTML = `
-            <span>${rank}위</span>
-            <span class="rankName">${escapeHtml(data.nickname)}</span>
-            <span class="rankScore">${Number(data.score) || 0}점</span>
-          `;
-
-          rankingListEl.appendChild(li);
-          rank++;
-        });
-      } catch (error) {
-        rankingListEl.innerHTML = "<li>랭킹을 불러오지 못했습니다.</li>";
-      }
+      maxCount = 15;
     }
+
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      rankingListEl.innerHTML = "<li>아직 등록된 기록이 없습니다.</li>";
+      return;
+    }
+
+    let rankingData = [];
+
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
+
+      if (!data.nickname) return;
+
+      rankingData.push({
+        nickname: data.nickname,
+        score: Number(data.score) || 0
+      });
+    });
+
+    rankingData.sort((a, b) => b.score - a.score);
+    rankingData = rankingData.slice(0, maxCount);
+
+    rankingListEl.innerHTML = "";
+
+    rankingData.forEach((data, index) => {
+      const li = document.createElement("li");
+
+      li.innerHTML = `
+        <span>${index + 1}위</span>
+        <span class="rankName">${escapeHtml(data.nickname)}</span>
+        <span class="rankScore">${data.score}점</span>
+      `;
+
+      rankingListEl.appendChild(li);
+    });
+  } catch (error) {
+    rankingListEl.innerHTML = "<li>랭킹을 불러오지 못했습니다.</li>";
+  }
+}
 
     function startGame() {
       score = 0;
