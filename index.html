@@ -566,11 +566,11 @@
 
       <div class="rankingTabs">
   <button onclick="loadRankings('all15')">
-    TOP 15
+    TOP 10
   </button>
 
   <button onclick="loadRankings('today15')">
-    오늘의 TOP 15
+    오늘의 TOP 10
   </button>
 
   <button onclick="loadRankings('all100')">
@@ -612,7 +612,7 @@
         </a>
         댓글로 부탁드립니다.
       </p>
-      <p class="versionText">Version 1.6.2</p>
+      <p class="versionText">Version 1.6.3</p>
     </footer>
 
     <div id="noticeModal" class="noticeModal hidden">
@@ -1004,7 +1004,7 @@ function closeNotice() {
     limit(100)
   );
 
-  maxCount = 15;
+  maxCount = 10;
 } else if (type === "all100") {
       q = query(
         collection(db, "rankings"),
@@ -1017,10 +1017,10 @@ function closeNotice() {
       q = query(
         collection(db, "rankings"),
         orderBy("score", "desc"),
-        limit(15)
+        limit(10)
       );
 
-      maxCount = 15;
+      maxCount = 10;
     }
 
     const snap = await getDocs(q);
