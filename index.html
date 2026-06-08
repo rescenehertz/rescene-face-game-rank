@@ -388,6 +388,65 @@
   font-size: 13px;
 }
 
+    .infoToggle {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 999;
+}
+
+#infoBtn {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  padding: 0;
+  font-size: 18px;
+  font-weight: 900;
+  background: var(--buttonBg);
+  color: var(--buttonText);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.noticeModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.noticeCard {
+  width: 100%;
+  max-width: 380px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--photoBorder);
+  border-radius: 24px;
+  padding: 24px;
+  text-align: left;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.35);
+}
+
+.noticeCard h2 {
+  text-align: center;
+  margin-bottom: 18px;
+  font-size: 24px;
+}
+
+.noticeCard p {
+  color: var(--subText);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.noticeCard button {
+  margin-top: 14px;
+}
+
     @media (min-width: 768px) {
       .app {
         max-width: 520px;
@@ -403,6 +462,10 @@
     <div class="themeToggle">
       <button id="themeBtn" onclick="toggleTheme()">🌙</button>
     </div>
+
+    <div class="infoToggle">
+  <button id="infoBtn" onclick="openNotice()">i</button>
+</div>
 
     <div id="startScreen" class="startScreen">
       <h1>리센느 얼굴 맞추기 게임 경쟁전</h1>
@@ -551,8 +614,24 @@
         </a>
         댓글로 부탁드립니다.
       </p>
-      <p class="versionText">Version 1.4</p>
+      <p class="versionText">Version 1.5</p>
     </footer>
+
+    <div id="noticeModal" class="noticeModal hidden">
+  <div class="noticeCard">
+    <h2>안내사항</h2>
+
+    <p>
+      6월 9일 01시 50점 이상의 제한시간을 기존 1.0초에서 1.1초로 난이도 소폭 하향 업데이트 진행되었습니다.
+    </p>
+    
+    <p>
+      본 게임은 수익을 창출하지 않는 팬게임입니다.
+    </p>
+
+    <button class="mainBtn" onclick="closeNotice()">확인</button>
+  </div>
+</div>
 
   </div>
 
@@ -699,6 +778,8 @@
     window.logout = logout;
     window.saveNickname = saveNickname;
     window.loadRankings = loadRankings;
+    window.openNotice = openNotice;
+    window.closeNotice = closeNotice;
 
     function toggleTheme() {
       document.body.classList.toggle("light");
@@ -718,6 +799,14 @@
         themeBtn.textContent = "🌙";
       }
     }
+
+    function openNotice() {
+  document.getElementById("noticeModal").classList.remove("hidden");
+}
+
+function closeNotice() {
+  document.getElementById("noticeModal").classList.add("hidden");
+}
 
     function updateBestScoreDisplay() {
       startBestScoreEl.textContent = bestScore;
