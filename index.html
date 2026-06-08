@@ -788,11 +788,11 @@
       const oldScore = snap.exists() ? Number(snap.data().score) || 0 : 0;
 
       await setDoc(ref, {
-        uid: currentUser.uid,
-        nickname: nickname,
-        score: oldScore,
-        updatedAt: serverTimestamp()
-      }, { merge: true });
+  uid: currentUser.uid,
+  nickname: nickname,
+  score: oldScore,
+  profileUpdatedAt: serverTimestamp()
+}, { merge: true });
 
       bestScore = oldScore;
       updateBestScoreDisplay();
