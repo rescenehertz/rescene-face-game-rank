@@ -66,20 +66,24 @@
       display: none !important;
     }
 
-    .themeToggle {
-      align-self: flex-end;
-    }
+    .topButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
 
-    #themeBtn {
-      width: 42px;
-      height: 42px;
-      border-radius: 999px;
-      padding: 0;
-      font-size: 18px;
-      background: var(--buttonBg);
-      color: var(--buttonText);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-    }
+#themeBtn,
+#infoBtn {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  padding: 0;
+  font-size: 18px;
+  font-weight: 900;
+  background: var(--buttonBg);
+  color: var(--buttonText);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
 
     .startScreen,
     .endScreen {
@@ -388,12 +392,7 @@
   font-size: 13px;
 }
 
-    .infoToggle {
-  position: fixed;
-  top: 14px;
-  left: 14px;
-  z-index: 999;
-}
+    
 
 #infoBtn {
   width: 42px;
@@ -459,13 +458,12 @@
 <body>
   <div class="app">
 
-    <div class="themeToggle">
-      <button id="themeBtn" onclick="toggleTheme()">🌙</button>
-    </div>
-
-    <div class="infoToggle">
+    <div class="topButtons">
   <button id="infoBtn" onclick="openNotice()">i</button>
+
+  <button id="themeBtn" onclick="toggleTheme()">🌙</button>
 </div>
+    
 
     <div id="startScreen" class="startScreen">
       <h1>리센느 얼굴 맞추기 게임 경쟁전</h1>
@@ -614,7 +612,7 @@
         </a>
         댓글로 부탁드립니다.
       </p>
-      <p class="versionText">Version 1.5</p>
+      <p class="versionText">Version 1.5.2</p>
     </footer>
 
     <div id="noticeModal" class="noticeModal hidden">
