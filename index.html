@@ -551,7 +551,7 @@
         </a>
         댓글로 부탁드립니다.
       </p>
-      <p class="versionText">Version 1.1</p>
+      <p class="versionText">Version 1.2</p>
     </footer>
 
   </div>
@@ -798,13 +798,42 @@
       updateBestScoreDisplay();
       authStatusEl.textContent = `${nickname} 닉네임으로 저장되었습니다.`;
       await loadRankings();
+
+      await updateTodayNickname();
     }
+
+    async function updateTodayNickname() {
+  if (!currentUser || !nickname) return;
+
+  const todayId = getTodayId();
+  const dailyDocId = `${todayId}_${currentUser.uid}`;
+  const ref = doc(db, "dailyRankings", dailyDocId);
+  const snap = await getDoc(ref);
+
+  if (!snap.exists()) return;
+
+  await setDoc(ref, {
+    nickname: nickname,
+    profileUpdatedAt: serverTimestamp()
+  }, { merge: true });
+}
+
+    function getTodayId() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
 
     async function saveBestScoreIfNeeded() {
       if (!currentUser) {
         finalMessageEl.textContent = "Google 로그인 후 랭킹에 기록할 수 있습니다.";
         return;
       }
+
+      await saveDailyScore();
 
       if (!nickname) {
         finalMessageEl.textContent = "닉네임을 먼저 설정하면 랭킹에 기록됩니다.";
@@ -836,6 +865,28 @@
       await loadRankings();
     }
 
+
+    async function saveDailyScore() {
+  const todayId = getTodayId();
+  const dailyDocId = `${todayId}_${currentUser.uid}`;
+  const ref = doc(db, "dailyRankings", dailyDocId);
+
+  const snap = await getDoc(ref);
+  const oldDailyScore = snap.exists()
+    ? Number(snap.data().score) || 0
+    : 0;
+
+  if (score > oldDailyScore) {
+    await setDoc(ref, {
+      uid: currentUser.uid,
+      nickname: nickname,
+      score: score,
+      date: todayId,
+      updatedAt: serverTimestamp()
+    }, { merge: true });
+  }
+}
+
     async function loadRankings(type = "all15") {
   rankingListEl.innerHTML = "<li>랭킹을 불러오는 중...</li>";
 
@@ -844,18 +895,17 @@
     let maxCount;
 
     if (type === "today15") {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+  const todayId = getTodayId();
 
-      q = query(
-        collection(db, "rankings"),
-        where("updatedAt", ">=", today),
-        orderBy("updatedAt", "desc"),
-        limit(100)
-      );
+  q = query(
+    collection(db, "dailyRankings"),
+    where("date", "==", todayId),
+    orderBy("score", "desc"),
+    limit(15)
+  );
 
-      maxCount = 15;
-    } else if (type === "all100") {
+  maxCount = 15;
+} else if (type === "all100") {
       q = query(
         collection(db, "rankings"),
         orderBy("score", "desc"),
