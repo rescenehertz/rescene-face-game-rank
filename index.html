@@ -758,6 +758,9 @@
     const TIME_REACH_MIN_SCORE = 50;
     const PRELOAD_COUNT = 8;
 
+    const DEFAULT_RANK_LIMIT = 15;
+    const ALL_RANK_LIMIT = 150;
+
     let photoPool = [];
     let currentQuestion = null;
     let score = 0;
@@ -1015,26 +1018,26 @@ function closeNotice() {
   q = query(
     collection(db, "dailyRankings"),
     where("date", "==", todayId),
-    limit(100)
+    limit(ALL_RANK_LIMIT)
   );
 
-  maxCount = 10;
+  maxCount = DEFAULT_RANK_LIMIT;
 } else if (type === "all100") {
       q = query(
         collection(db, "rankings"),
         orderBy("score", "desc"),
-        limit(100)
+        limit(ALL_RANK_LIMIT)
       );
 
-      maxCount = 100;
+      maxCount = ALL_RANK_LIMIT;
     } else {
       q = query(
         collection(db, "rankings"),
         orderBy("score", "desc"),
-        limit(10)
+        limit(DEFAULT_RANK_LIMIT)
       );
 
-      maxCount = 10;
+      maxCount = DEFAULT_RANK_LIMIT;
     }
 
     const snap = await getDocs(q);
