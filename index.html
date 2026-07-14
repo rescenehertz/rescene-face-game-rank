@@ -626,7 +626,7 @@
         </a>
         댓글로 부탁드립니다.
       </p>
-      <p class="versionText">Version 1.6.3</p>
+      <p class="versionText">Version 1.7.0</p>
     </footer>
 
     <div id="noticeModal" class="noticeModal hidden">
@@ -1385,6 +1385,44 @@ function closeNotice() {
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
     }
+
+    document.addEventListener("keydown", function (event) {
+  if (gameScreen.classList.contains("hidden")) return;
+  if (answerLocked) return;
+
+  const key = event.key.toLowerCase();
+
+  const keyMap = {
+    "1": "원이",
+    "q": "원이",
+
+    "2": "리브",
+    "w": "리브",
+
+    "3": "미나미",
+    "e": "미나미",
+
+    "4": "메이",
+    "r": "메이",
+
+    "5": "제나",
+    "t": "제나"
+  };
+
+  const selectedName = keyMap[key];
+
+  if (!selectedName) return;
+
+  const buttons = document.querySelectorAll(".choices button");
+
+  const targetButton = Array.from(buttons).find(
+    button => button.textContent.trim() === selectedName
+  );
+
+  if (targetButton) {
+    selectAnswer(selectedName, targetButton);
+  }
+});
 
     loadTheme();
     updateBestScoreDisplay();
